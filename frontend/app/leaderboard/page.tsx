@@ -32,7 +32,8 @@ type LeaderboardResponse = {
 };
 
 const periods = ["Daily", "Weekly", "Monthly", "All Time"];
-const API_URL = "http://localhost:5000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Leaderboard() {
   const [period, setPeriod] = useState("Daily");

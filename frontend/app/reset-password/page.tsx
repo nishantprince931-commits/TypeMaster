@@ -6,7 +6,8 @@ import Link from "next/link";
 import { FormEvent, Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-const API_URL = "http://localhost:5000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 function ResetPasswordForm(){
   const searchParams = useSearchParams();

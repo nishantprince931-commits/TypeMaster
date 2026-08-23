@@ -11,7 +11,8 @@ const TEXTS = [
 
 const DURATIONS = [15, 30, 60, 120];
 
-const API_URL = "http://localhost:5000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function TypingTest() {
   const [duration, setDuration] = useState(60);

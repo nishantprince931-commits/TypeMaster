@@ -6,7 +6,8 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const API_URL = "http://localhost:5000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Login() {
   const router = useRouter();
