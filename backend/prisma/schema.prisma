@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  passwordHash    String
+  avatar          String?
+  country         String?
+  role            UserRole @default(USER)
+  level           Int      @default(1)
+  xp              Int      @default(0)
+  streak          Int      @default(0)
+  bestWpm         Float    @default(0)
+  averageWpm      Float    @default(0)
+  averageAccuracy Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  settings            UserSettings?
+  typingTests         TypingTest[]
+  lessonProgress      LessonProgress[]
+  challengeAttempts   ChallengeAttempt[]
+  userAchievements    UserAchievement[]
+  userStreaks         UserStreak[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model UserSettings {
+  id                String  @id @default(cuid())
+  userId            String  @unique
+  darkMode          Boolean @default(true)
+  soundEffects      Boolean @default(true)
+  keyboardSounds    Boolean @default(false)
+  virtualKeyboard   Boolean @default(true)
+  highlightMistakes Boolean @default(true)
+  instantFeedback   Boolean @default(true)
+  language          String  @default("English")
+  timerSeconds      Int     @default(60)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TypingText {
+  id         String   @id @default(cuid())
+  title      String
+  content    String
+  language   String
+  difficulty String
+  category   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  typingTests TypingTest[]
+}
+
+model TypingTest {
+  id                String   @id @default(cuid())
+  userId            String
+  typingTextId      String?
+  testType          String
+  durationSeconds   Int
+  wpm               Float
+  accuracy          Float
+  correctCharacters Int
+  wrongCharacters   Int
+  errors            Int
+  practiceSeconds   Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  typingText TypingText? @relation(fields: [typingTextId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([wpm])
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  description String
+  content     String
+  difficulty  String
+  order       Int      @unique
+  locked      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  progress LessonProgress[]
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  progress    Int       @default(0)
+  bestWpm     Float     @default(0)
+  accuracy    Float     @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model DailyChallenge {
+  id              String   @id @default(cuid())
+  date            DateTime @unique
+  title           String
+  content         String
+  durationSeconds Int      @default(60)
+  targetWpm       Float
+  targetAccuracy  Float
+  xpReward        Int      @default(50)
+  createdAt       DateTime @default(now())
+
+  attempts ChallengeAttempt[]
+}
+
+model ChallengeAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  wpm         Float
+  accuracy    Float
+  errors      Int
+  completed   Boolean  @default(false)
+  xpAwarded   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge DailyChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String
+  type        String
+  target      Float?
+  xpReward    Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+model UserStreak {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime
+  practiceMade Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
