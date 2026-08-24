@@ -7,7 +7,8 @@ import { FormEvent, Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://typemaster-backend-dhb8.onrender.com";
 
 function ResetPasswordForm(){
   const searchParams = useSearchParams();
