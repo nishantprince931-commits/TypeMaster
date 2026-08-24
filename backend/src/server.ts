@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://type-master-steel-three.vercel.app",
+    ],
   })
 );
 
