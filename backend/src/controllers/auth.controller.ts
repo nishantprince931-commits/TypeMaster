@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { prisma } from "../config/prisma";
+import nodemailer from "nodemailer";
 
 const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
@@ -237,26 +238,41 @@ export async function forgotPassword(
       },
     });
 
+    // IMPORTANT: Replace this with your actual Vercel URL.
     const resetLink =
-      `http://localhost:3000/reset-password?token=${rawToken}`;
+  `https://type-master-6d09a8wnw-type-master-team.vercel.app/reset-password?token=${rawToken}`;
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT || 587),
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+  });
 
-    const response: {
-      success: boolean;
-      message: string;
-      resetLink?: string;
-    } = {
+    await transporter.sendMail({
+      from: `"TypeMaster" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "TypeMaster Password Reset",
+      text: `Reset your TypeMaster password using this link: ${resetLink}`,
+      html: `
+        <h2>TypeMaster Password Reset</h2>
+        <p>You requested a password reset for your TypeMaster account.</p>
+        <p>
+          <a href="${resetLink}">
+            Reset Password
+          </a>
+        </p>
+        <p>This link expires in 30 minutes.</p>
+      `,
+    });
+
+    return res.status(200).json({
       success: true,
       message:
-        "If an account exists for this email, a reset link has been generated.",
-    };
-
-    // Development only: show the link in the response.
-    // In production this should be sent by email.
-    if (process.env.NODE_ENV !== "production") {
-      response.resetLink = resetLink;
-    }
-
-    return res.status(200).json(response);
+        "If an account exists for this email, a password reset link has been generated.",
+    });
   } catch (error) {
     console.error("Forgot password error:", error);
 
@@ -266,7 +282,6 @@ export async function forgotPassword(
     });
   }
 }
-
 export async function resetPassword(
   req: Request,
   res: Response
