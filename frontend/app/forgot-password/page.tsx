@@ -28,7 +28,7 @@ export default function ForgotPassword() {
 
     try {
       setLoading(true);
-
+      console.log("FORGOT PASSWORD API:", `${API_URL}/api/auth/forgot-password`);
       const response = await fetch(
         `${API_URL}/api/auth/forgot-password`,
         {
