@@ -207,11 +207,11 @@ export async function forgotPassword(
       return res.status(200).json({
         success: true,
         message:
-          "If an account exists for this email, a reset link has been generated.",
+          "If an account exists for this email, a password reset link has been generated.",
       });
     }
 
-    // Remove unused old tokens for this user.
+    // Remove old unused reset tokens.
     await prisma.passwordResetToken.deleteMany({
       where: {
         userId: user.id,
@@ -219,6 +219,7 @@ export async function forgotPassword(
       },
     });
 
+    // Generate secure reset token.
     const rawToken = crypto.randomBytes(32).toString("hex");
 
     const tokenHash = crypto
@@ -226,6 +227,7 @@ export async function forgotPassword(
       .update(rawToken)
       .digest("hex");
 
+    // Token expires after 30 minutes.
     const expiresAt = new Date(
       Date.now() + 30 * 60 * 1000
     );
@@ -238,41 +240,85 @@ export async function forgotPassword(
       },
     });
 
-    // IMPORTANT: Replace this with your actual Vercel URL.
+    // Production Vercel reset page.
     const resetLink =
-  `https://type-master-6d09a8wnw-type-master-team.vercel.app/reset-password?token=${rawToken}`;
+      `https://type-master-6d09a8wnw-type-master-team.vercel.app/reset-password?token=${rawToken}`;
+
+    // Create Gmail SMTP transporter.
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
+      host: process.env.EMAIL_HOST || "smtp.gmail.com",
       port: Number(process.env.EMAIL_PORT || 587),
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
-  });
-  console.log("SMTP config:", {
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  user: process.env.EMAIL_USER,
-  passwordConfigured: Boolean(process.env.EMAIL_PASSWORD),
-});
-console.log("FORGOT PASSWORD: email sent successfully");
+    });
+
+    console.log("SMTP config:", {
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      user: process.env.EMAIL_USER,
+      passwordConfigured: Boolean(
+        process.env.EMAIL_PASSWORD
+      ),
+    });
+
+    console.log(
+      "FORGOT PASSWORD: sending email to",
+      email
+    );
+
+    // Send reset email.
     await transporter.sendMail({
       from: `"TypeMaster" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "TypeMaster Password Reset",
       text: `Reset your TypeMaster password using this link: ${resetLink}`,
       html: `
-        <h2>TypeMaster Password Reset</h2>
-        <p>You requested a password reset for your TypeMaster account.</p>
-        <p>
-          <a href="${resetLink}">
-            Reset Password
-          </a>
-        </p>
-        <p>This link expires in 30 minutes.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+          <h2>TypeMaster Password Reset</h2>
+
+          <p>
+            You requested a password reset for your TypeMaster account.
+          </p>
+
+          <p>
+            Click the button below to create a new password:
+          </p>
+
+          <p>
+            <a
+              href="${resetLink}"
+              style="
+                display:inline-block;
+                background:#2563eb;
+                color:white;
+                padding:12px 20px;
+                text-decoration:none;
+                border-radius:8px;
+                font-weight:bold;
+              "
+            >
+              Reset Password
+            </a>
+          </p>
+
+          <p>
+            This reset link expires in 30 minutes.
+          </p>
+
+          <p>
+            If you did not request a password reset, you can ignore this email.
+          </p>
+        </div>
       `,
     });
+
+    // IMPORTANT: This must come AFTER sendMail().
+    console.log(
+      "FORGOT PASSWORD: email sent successfully"
+    );
 
     return res.status(200).json({
       success: true,
@@ -280,14 +326,19 @@ console.log("FORGOT PASSWORD: email sent successfully");
         "If an account exists for this email, a password reset link has been generated.",
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error(
+      "Forgot password error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Unable to process password reset request.",
+      message:
+        "Unable to process password reset request.",
     });
   }
 }
+
 export async function resetPassword(
   req: Request,
   res: Response
@@ -313,7 +364,8 @@ export async function resetPassword(
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 6 characters long.",
+        message:
+          "Password must be at least 6 characters long.",
       });
     }
 
@@ -340,7 +392,10 @@ export async function resetPassword(
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(
+      password,
+      12
+    );
 
     await prisma.$transaction([
       prisma.user.update({
@@ -368,7 +423,10 @@ export async function resetPassword(
         "Password reset successfully. You can now login.",
     });
   } catch (error) {
-    console.error("Reset password error:", error);
+    console.error(
+      "Reset password error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
