@@ -256,6 +256,7 @@ export async function forgotPassword(
   user: process.env.EMAIL_USER,
   passwordConfigured: Boolean(process.env.EMAIL_PASSWORD),
 });
+console.log("FORGOT PASSWORD: email sent successfully");
     await transporter.sendMail({
       from: `"TypeMaster" <${process.env.EMAIL_USER}>`,
       to: email,
