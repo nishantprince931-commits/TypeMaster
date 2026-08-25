@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { prisma } from "../config/prisma";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
@@ -244,39 +244,37 @@ export async function forgotPassword(
     const resetLink =
       `https://type-master-6d09a8wnw-type-master-team.vercel.app/reset-password?token=${rawToken}`;
 
-    // Create Gmail SMTP transporter.
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || "smtp.gmail.com",
-      port: Number(process.env.EMAIL_PORT || 587),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+    // Resend API key.
+    const resendApiKey = process.env.RESEND_API_KEY;
 
-    console.log("SMTP config:", {
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      user: process.env.EMAIL_USER,
-      passwordConfigured: Boolean(
-        process.env.EMAIL_PASSWORD
-      ),
-    });
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
+    const resend = new Resend(resendApiKey);
 
     console.log(
       "FORGOT PASSWORD: sending email to",
       email
     );
 
-    // Send reset email.
-    await transporter.sendMail({
-      from: `"TypeMaster" <${process.env.EMAIL_USER}>`,
-      to: email,
+    // Send email using Resend HTTPS API.
+    const { data, error } = await resend.emails.send({
+      from: "TypeMaster <onboarding@resend.dev>",
+      to: [email],
       subject: "TypeMaster Password Reset",
       text: `Reset your TypeMaster password using this link: ${resetLink}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+        <div
+          style="
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+          "
+        >
           <h2>TypeMaster Password Reset</h2>
 
           <p>
@@ -291,13 +289,13 @@ export async function forgotPassword(
             <a
               href="${resetLink}"
               style="
-                display:inline-block;
-                background:#2563eb;
-                color:white;
-                padding:12px 20px;
-                text-decoration:none;
-                border-radius:8px;
-                font-weight:bold;
+                display: inline-block;
+                background: #2563eb;
+                color: white;
+                padding: 12px 20px;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: bold;
               "
             >
               Reset Password
@@ -305,19 +303,25 @@ export async function forgotPassword(
           </p>
 
           <p>
-            This reset link expires in 30 minutes.
+            This link expires in 30 minutes.
           </p>
 
           <p>
-            If you did not request a password reset, you can ignore this email.
+            If you did not request a password reset,
+            you can safely ignore this email.
           </p>
         </div>
       `,
     });
 
-    // IMPORTANT: This must come AFTER sendMail().
+    if (error) {
+      console.error("Resend email error:", error);
+      throw new Error(error.message);
+    }
+
     console.log(
-      "FORGOT PASSWORD: email sent successfully"
+      "FORGOT PASSWORD: email sent successfully",
+      data?.id
     );
 
     return res.status(200).json({
