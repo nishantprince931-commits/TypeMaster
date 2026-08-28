@@ -6,25 +6,38 @@ import Link from "next/link";
 export default function Home() {
   const [darkMode, setDarkMode] = useState(true);
 
+  const theme = darkMode
+    ? {
+        page: "bg-[#070B14] text-white",
+        sidebar: "border-white/10 bg-[#0B1020]",
+        card: "border-white/10 bg-[#0D1424]",
+        input: "bg-[#080D18]",
+        hover: "hover:bg-white/5",
+        muted: "text-slate-400",
+        soft: "text-slate-500",
+      }
+    : {
+        page: "bg-slate-100 text-slate-900",
+        sidebar: "border-slate-200 bg-white",
+        card: "border-slate-200 bg-white",
+        input: "bg-slate-50",
+        hover: "hover:bg-slate-100",
+        muted: "text-slate-500",
+        soft: "text-slate-500",
+      };
+
   return (
-    <main
-      className={`min-h-screen ${darkMode
-          ? "bg-[#070B14] text-white"
-          : "bg-slate-100 text-slate-900"
-        }`}
-    >
+    <main className={`min-h-screen ${theme.page}`}>
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside
-          className={`hidden w-64 border-r p-5 md:block ${darkMode
-              ? "border-white/10 bg-[#0B1020]"
-              : "border-slate-200 bg-white"
-            }`}
+          className={`hidden w-64 border-r p-5 md:block ${theme.sidebar}`}
         >
           <div className="mb-10 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-xl">
               ⌨
             </div>
+
             <div>
               <h1 className="text-xl font-bold">TypeMaster</h1>
               <p className="text-xs text-slate-400">Typing Platform</p>
@@ -34,7 +47,7 @@ export default function Home() {
           <nav className="space-y-2">
             <Link
               href="/"
-              className="flex w-full items-center gap-3 rounded-xl bg-blue-600 px-4 py-3 text-left text-white transition"
+              className="flex w-full items-center gap-3 rounded-xl bg-blue-600 px-4 py-3 text-left text-white transition hover:bg-blue-500"
             >
               <span>⌂</span>
               Home
@@ -42,10 +55,7 @@ export default function Home() {
 
             <Link
               href="/practice"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>⌨</span>
               Practice
@@ -53,10 +63,7 @@ export default function Home() {
 
             <Link
               href="/typing-test"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>◉</span>
               Typing Test
@@ -64,10 +71,7 @@ export default function Home() {
 
             <Link
               href="/lessons"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>▣</span>
               Lessons
@@ -75,10 +79,7 @@ export default function Home() {
 
             <Link
               href="/daily-challenge"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>⚡</span>
               Daily Challenge
@@ -86,10 +87,7 @@ export default function Home() {
 
             <Link
               href="/leaderboard"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>🏆</span>
               Leaderboard
@@ -97,10 +95,7 @@ export default function Home() {
 
             <Link
               href="/progress"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>◒</span>
               Progress
@@ -108,10 +103,7 @@ export default function Home() {
 
             <Link
               href="/profile"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>♙</span>
               Profile
@@ -119,10 +111,7 @@ export default function Home() {
 
             <Link
               href="/settings"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${darkMode
-                  ? "text-slate-300 hover:bg-white/5"
-                  : "text-slate-600 hover:bg-slate-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition ${theme.muted} ${theme.hover}`}
             >
               <span>⚙</span>
               Settings
@@ -131,6 +120,7 @@ export default function Home() {
 
           <div className="mt-10 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 p-4">
             <p className="text-sm text-blue-100">Current Level</p>
+
             <div className="mt-1 flex items-end justify-between">
               <h2 className="text-2xl font-bold">Level 8</h2>
               <span className="text-sm">2,450 XP</span>
@@ -150,28 +140,38 @@ export default function Home() {
         <section className="flex-1">
           {/* Header */}
           <header
-            className={`flex items-center justify-between border-b px-5 py-4 md:px-8 ${darkMode ? "border-white/10" : "border-slate-200"
-              }`}
+            className={`flex items-center justify-between border-b px-5 py-4 md:px-8 ${
+              darkMode ? "border-white/10" : "border-slate-200"
+            }`}
           >
             <div>
-              <p className="text-sm text-slate-400">Wednesday, August 19</p>
-              <h2 className="text-xl font-bold">Good evening 👋</h2>
+              <p className="text-sm text-slate-400">
+                Wednesday, August 19
+              </p>
+
+              <h2 className="text-xl font-bold">
+                Good evening 👋
+              </h2>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className={`rounded-xl px-4 py-2 text-sm ${darkMode
-                    ? "bg-white/10"
-                    : "bg-white shadow-sm"
-                  }`}
+                className={`rounded-xl px-4 py-2 text-sm transition ${
+                  darkMode
+                    ? "bg-white/10 hover:bg-white/15"
+                    : "bg-white shadow-sm hover:bg-slate-50"
+                }`}
               >
                 {darkMode ? "☀ Light" : "🌙 Dark"}
               </button>
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-bold">
+              <Link
+                href="/profile"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-bold transition hover:bg-blue-500"
+              >
                 N
-              </div>
+              </Link>
             </div>
           </header>
 
@@ -192,9 +192,12 @@ export default function Home() {
                   faster and more confident typist.
                 </p>
 
-                <button className="mt-6 rounded-xl bg-white px-6 py-3 font-bold text-blue-700 shadow-lg transition hover:scale-105">
+                <Link
+                  href="/typing-test"
+                  className="mt-6 inline-block rounded-xl bg-white px-6 py-3 font-bold text-blue-700 shadow-lg transition hover:scale-105"
+                >
                   Start Typing Now →
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -208,20 +211,23 @@ export default function Home() {
               ].map(([icon, title, value]) => (
                 <div
                   key={title}
-                  className={`rounded-2xl border p-5 ${darkMode
-                      ? "border-white/10 bg-[#0D1424]"
-                      : "border-slate-200 bg-white"
-                    }`}
+                  className={`rounded-2xl border p-5 ${theme.card}`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xl">{icon}</span>
+
                     <span className="text-xs text-emerald-400">
                       +12%
                     </span>
                   </div>
 
-                  <p className="mt-4 text-sm text-slate-400">{title}</p>
-                  <h3 className="mt-1 text-2xl font-bold">{value}</h3>
+                  <p className="mt-4 text-sm text-slate-400">
+                    {title}
+                  </p>
+
+                  <h3 className="mt-1 text-2xl font-bold">
+                    {value}
+                  </h3>
                 </div>
               ))}
             </div>
@@ -229,16 +235,14 @@ export default function Home() {
             {/* Practice + Challenge */}
             <div className="grid gap-6 lg:grid-cols-3">
               <div
-                className={`rounded-2xl border p-6 lg:col-span-2 ${darkMode
-                    ? "border-white/10 bg-[#0D1424]"
-                    : "border-slate-200 bg-white"
-                  }`}
+                className={`rounded-2xl border p-6 lg:col-span-2 ${theme.card}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-400">
                       Quick Practice
                     </p>
+
                     <h2 className="mt-1 text-2xl font-bold">
                       Ready to type?
                     </h2>
@@ -250,22 +254,26 @@ export default function Home() {
                 </div>
 
                 <div
-                  className={`mt-5 rounded-xl p-5 text-lg leading-8 ${darkMode ? "bg-[#080D18]" : "bg-slate-50"
-                    }`}
+                  className={`mt-5 rounded-xl p-5 text-lg leading-8 ${theme.input}`}
                 >
                   The ability to type quickly and accurately helps
                   you communicate better and work more efficiently.
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <button className="rounded-xl bg-blue-600 px-5 py-3 font-semibold hover:bg-blue-500">
+                  <Link
+                    href="/practice"
+                    className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-500"
+                  >
                     Start Practice
-                  </button>
+                  </Link>
+
                   <button
-                    className={`rounded-xl px-5 py-3 font-semibold ${darkMode
-                        ? "bg-white/10"
-                        : "bg-slate-100"
-                      }`}
+                    className={`rounded-xl px-5 py-3 font-semibold ${
+                      darkMode
+                        ? "bg-white/10 hover:bg-white/15"
+                        : "bg-slate-100 hover:bg-slate-200"
+                    }`}
                   >
                     Custom Text
                   </button>
@@ -293,25 +301,27 @@ export default function Home() {
                   68% completed
                 </p>
 
-                <button className="mt-6 w-full rounded-xl bg-white py-3 font-bold text-orange-600">
+                <Link
+                  href="/daily-challenge"
+                  className="mt-6 block w-full rounded-xl bg-white py-3 text-center font-bold text-orange-600 transition hover:bg-orange-50"
+                >
                   Continue Challenge
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Bottom section */}
             <div className="grid gap-6 lg:grid-cols-2">
+              {/* Performance */}
               <div
-                className={`rounded-2xl border p-6 ${darkMode
-                    ? "border-white/10 bg-[#0D1424]"
-                    : "border-slate-200 bg-white"
-                  }`}
+                className={`rounded-2xl border p-6 ${theme.card}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-400">
                       Performance
                     </p>
+
                     <h2 className="text-xl font-bold">
                       WPM Progress
                     </h2>
@@ -330,9 +340,12 @@ export default function Home() {
                         className="flex flex-1 flex-col items-center justify-end gap-2"
                       >
                         <div
-                          className="w-full rounded-t-lg bg-blue-500"
-                          style={{ height: `${height * 2}px` }}
+                          className="w-full rounded-t-lg bg-blue-500 transition hover:bg-blue-400"
+                          style={{
+                            height: `${height * 2}px`,
+                          }}
                         />
+
                         <span className="text-xs text-slate-500">
                           {index + 1}
                         </span>
@@ -342,25 +355,27 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Leaderboard */}
               <div
-                className={`rounded-2xl border p-6 ${darkMode
-                    ? "border-white/10 bg-[#0D1424]"
-                    : "border-slate-200 bg-white"
-                  }`}
+                className={`rounded-2xl border p-6 ${theme.card}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-400">
                       Global Ranking
                     </p>
+
                     <h2 className="text-xl font-bold">
                       Leaderboard
                     </h2>
                   </div>
 
-                  <button className="text-sm text-blue-400">
+                  <Link
+                    href="/leaderboard"
+                    className="text-sm text-blue-400 transition hover:text-blue-300"
+                  >
                     View All →
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="mt-5 space-y-3">
@@ -372,21 +387,26 @@ export default function Home() {
                   ].map(([rank, name, wpm]) => (
                     <div
                       key={name}
-                      className={`flex items-center justify-between rounded-xl p-3 ${name === "You"
+                      className={`flex items-center justify-between rounded-xl p-3 ${
+                        name === "You"
                           ? "bg-blue-600/15"
                           : darkMode
-                            ? "bg-white/5"
-                            : "bg-slate-50"
-                        }`}
+                          ? "bg-white/5"
+                          : "bg-slate-50"
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="w-5 text-center font-bold">
                           {rank}
                         </span>
+
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-sm font-bold">
                           {name[0]}
                         </div>
-                        <span className="font-medium">{name}</span>
+
+                        <span className="font-medium">
+                          {name}
+                        </span>
                       </div>
 
                       <span className="text-sm font-semibold text-blue-400">
